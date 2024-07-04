@@ -30,6 +30,7 @@ once_cell = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 simplelog = { workspace = true }
 toml = { workspace = true }
+codespan.workspace = true
 
 [dev-dependencies]
 datatest-stable = { workspace = true }

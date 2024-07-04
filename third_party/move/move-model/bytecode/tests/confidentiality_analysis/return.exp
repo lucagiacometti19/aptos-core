@@ -1,0 +1,170 @@
+============ initial translation from Move ================
+
+[variant baseline]
+fun Return::return_P_while_pc_P(): u64 {
+     var $t0: u64
+  0: $t0 := 0
+  1: return $t0
+}
+
+
+[variant baseline]
+fun Return::return_P_while_pc_S_incorrect($t0|x: u64): u64 {
+     var $t1: u64
+     var $t2: u64
+     var $t3: bool
+     var $t4: u64
+     var $t5: u64
+  0: $t1 := move($t0)
+  1: $t2 := 0
+  2: $t3 := >($t1, $t2)
+  3: if ($t3) goto 4 else goto 7
+  4: label L1
+  5: $t4 := 1
+  6: return $t4
+  7: label L0
+  8: $t5 := 0
+  9: return $t5
+}
+
+
+[variant baseline]
+fun Return::return_S_while_pc_P_incorrect($t0|x: u64): u64 {
+     var $t1: u64
+  0: $t1 := move($t0)
+  1: return $t1
+}
+
+
+[variant baseline]
+fun Return::return_S_while_pc_S_incorrect($t0|x: u64): u64 {
+     var $t1: u64
+     var $t2: u64
+     var $t3: bool
+     var $t4: u64
+     var $t5: u64
+  0: $t1 := copy($t0)
+  1: $t2 := 0
+  2: $t3 := >($t1, $t2)
+  3: if ($t3) goto 4 else goto 7
+  4: label L1
+  5: $t4 := move($t0)
+  6: return $t4
+  7: label L0
+  8: $t5 := 0
+  9: return $t5
+}
+
+============ after pipeline `confidentiality_analysis` ================
+
+[variant baseline]
+fun Return::return_P_while_pc_P(): u64 {
+     var $t0: u64
+  0: $t0 := 0
+  1: return $t0
+}
+
+
+[variant baseline]
+fun Return::return_P_while_pc_S_incorrect($t0|x: u64): u64 {
+     var $t1: u64
+     var $t2: u64
+     var $t3: bool
+     var $t4: u64
+     var $t5: u64
+  0: $t1 := move($t0)
+  1: $t2 := 0
+  2: $t3 := >($t1, $t2)
+  3: if ($t3) goto 4 else goto 7
+  4: label L1
+  5: $t4 := 1
+  6: return $t4
+  7: label L0
+  8: $t5 := 0
+  9: return $t5
+}
+
+
+[variant baseline]
+fun Return::return_S_while_pc_P_incorrect($t0|x: u64): u64 {
+     var $t1: u64
+  0: $t1 := move($t0)
+  1: return $t1
+}
+
+
+[variant baseline]
+fun Return::return_S_while_pc_S_incorrect($t0|x: u64): u64 {
+     var $t1: u64
+     var $t2: u64
+     var $t3: bool
+     var $t4: u64
+     var $t5: u64
+  0: $t1 := copy($t0)
+  1: $t2 := 0
+  2: $t3 := >($t1, $t2)
+  3: if ($t3) goto 4 else goto 7
+  4: label L1
+  5: $t4 := move($t0)
+  6: return $t4
+  7: label L0
+  8: $t5 := 0
+  9: return $t5
+}
+
+============ Diagnostics ================
+warning: Implicit data leak via return - off: 6
+   ┌─ tests/confidentiality_analysis/return.move:4:5
+   │
+ 4 │ ╭     fun return_P_while_pc_S_incorrect(x: u64): u64 {
+ 5 │ │         if (x > 0) {
+ 6 │ │             // pc raised
+ 7 │ │             return 1
+ 8 │ │         };
+ 9 │ │         0
+10 │ │     }
+   │ ╰─────^
+
+warning: Implicit data leak via return - off: 9
+   ┌─ tests/confidentiality_analysis/return.move:4:5
+   │
+ 4 │ ╭     fun return_P_while_pc_S_incorrect(x: u64): u64 {
+ 5 │ │         if (x > 0) {
+ 6 │ │             // pc raised
+ 7 │ │             return 1
+ 8 │ │         };
+ 9 │ │         0
+10 │ │     }
+   │ ╰─────^
+
+warning: Implicit data leak via return - off: 6
+   ┌─ tests/confidentiality_analysis/return.move:13:5
+   │
+13 │ ╭     fun return_S_while_pc_S_incorrect(x: u64): u64 {
+14 │ │         if (x > 0) {
+15 │ │             // pc raised
+16 │ │             return x
+17 │ │         };
+18 │ │         0
+19 │ │     }
+   │ ╰─────^
+
+warning: Implicit data leak via return - off: 9
+   ┌─ tests/confidentiality_analysis/return.move:13:5
+   │
+13 │ ╭     fun return_S_while_pc_S_incorrect(x: u64): u64 {
+14 │ │         if (x > 0) {
+15 │ │             // pc raised
+16 │ │             return x
+17 │ │         };
+18 │ │         0
+19 │ │     }
+   │ ╰─────^
+
+warning: Explicit data leak via return of local 1
+   ┌─ tests/confidentiality_analysis/return.move:22:5
+   │
+22 │ ╭     fun return_S_while_pc_P_incorrect(x: u64): u64 {
+23 │ │         x
+24 │ │     }
+   │ ╰─────^

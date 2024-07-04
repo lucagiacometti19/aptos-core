@@ -4,9 +4,7 @@
 
 use anyhow::anyhow;
 use move_stackless_bytecode::{
-    borrow_analysis::BorrowAnalysisProcessor, function_target_pipeline::FunctionTargetPipeline,
-    livevar_analysis::LiveVarAnalysisProcessor, reaching_def_analysis::ReachingDefProcessor,
-    usage_analysis::UsageProcessor,
+    borrow_analysis::BorrowAnalysisProcessor, confidentiality_analysis::ConfidentialityAnalysisProcessor, function_target_pipeline::FunctionTargetPipeline, livevar_analysis::LiveVarAnalysisProcessor, reaching_def_analysis::ReachingDefProcessor, usage_analysis::UsageProcessor
 };
 use std::path::Path;
 
@@ -45,6 +43,11 @@ fn get_tested_transformation_pipeline(
             pipeline.add_processor(UsageProcessor::new());
             Ok(Some(pipeline))
         },
+        "confidentiality_analysis" => {
+            let mut pipeline = FunctionTargetPipeline::default();
+            pipeline.add_processor(Box::new(ConfidentialityAnalysisProcessor{}));
+            Ok(Some(pipeline))
+        }
         _ => Err(anyhow!(
             "the sub-directory `{}` has no associated pipeline to test",
             dir_name

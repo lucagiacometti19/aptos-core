@@ -1,0 +1,145 @@
+============ initial translation from Move ================
+
+[variant baseline]
+fun Unpack::pack_one_S_into_T2_incorrect($t0|x: u64): Unpack::T2 {
+     var $t1: u64
+     var $t2: bool
+     var $t3: Unpack::T2
+  0: $t1 := move($t0)
+  1: $t2 := false
+  2: $t3 := pack Unpack::T2($t1, $t2)
+  3: return $t3
+}
+
+
+[variant baseline]
+fun Unpack::pack_single_P_into_T1(): Unpack::T1 {
+     var $t0: u64
+     var $t1: Unpack::T1
+  0: $t0 := 0
+  1: $t1 := pack Unpack::T1($t0)
+  2: return $t1
+}
+
+
+[variant baseline]
+fun Unpack::pack_single_S_into_T1_incorrect($t0|x: u64): Unpack::T1 {
+     var $t1: u64
+     var $t2: Unpack::T1
+  0: $t1 := move($t0)
+  1: $t2 := pack Unpack::T1($t1)
+  2: return $t2
+}
+
+
+[variant baseline]
+fun Unpack::pack_two_P_into_T2(): Unpack::T2 {
+     var $t0: u64
+     var $t1: bool
+     var $t2: Unpack::T2
+  0: $t0 := 0
+  1: $t1 := true
+  2: $t2 := pack Unpack::T2($t0, $t1)
+  3: return $t2
+}
+
+
+[variant baseline]
+fun Unpack::pack_two_S_into_T2_incorrect($t0|x: u64, $t1|y: bool): Unpack::T2 {
+     var $t2: u64
+     var $t3: bool
+     var $t4: Unpack::T2
+  0: $t2 := move($t0)
+  1: $t3 := move($t1)
+  2: $t4 := pack Unpack::T2($t2, $t3)
+  3: return $t4
+}
+
+============ after pipeline `confidentiality_analysis` ================
+
+[variant baseline]
+fun Unpack::pack_one_S_into_T2_incorrect($t0|x: u64): Unpack::T2 {
+     var $t1: u64
+     var $t2: bool
+     var $t3: Unpack::T2
+  0: $t1 := move($t0)
+  1: $t2 := false
+  2: $t3 := pack Unpack::T2($t1, $t2)
+  3: return $t3
+}
+
+
+[variant baseline]
+fun Unpack::pack_single_P_into_T1(): Unpack::T1 {
+     var $t0: u64
+     var $t1: Unpack::T1
+  0: $t0 := 0
+  1: $t1 := pack Unpack::T1($t0)
+  2: return $t1
+}
+
+
+[variant baseline]
+fun Unpack::pack_single_S_into_T1_incorrect($t0|x: u64): Unpack::T1 {
+     var $t1: u64
+     var $t2: Unpack::T1
+  0: $t1 := move($t0)
+  1: $t2 := pack Unpack::T1($t1)
+  2: return $t2
+}
+
+
+[variant baseline]
+fun Unpack::pack_two_P_into_T2(): Unpack::T2 {
+     var $t0: u64
+     var $t1: bool
+     var $t2: Unpack::T2
+  0: $t0 := 0
+  1: $t1 := true
+  2: $t2 := pack Unpack::T2($t0, $t1)
+  3: return $t2
+}
+
+
+[variant baseline]
+fun Unpack::pack_two_S_into_T2_incorrect($t0|x: u64, $t1|y: bool): Unpack::T2 {
+     var $t2: u64
+     var $t3: bool
+     var $t4: Unpack::T2
+  0: $t2 := move($t0)
+  1: $t3 := move($t1)
+  2: $t4 := pack Unpack::T2($t2, $t3)
+  3: return $t4
+}
+
+============ Diagnostics ================
+warning: Explicit data leak via return of local 2
+   ┌─ tests/confidentiality_analysis/pack.move:7:5
+   │
+ 7 │ ╭     fun pack_single_S_into_T1_incorrect(x: u64): T1 {
+ 8 │ │         // pack x produces S
+ 9 │ │         let t1 = T1 { f1: x };
+10 │ │         return t1
+11 │ │     }
+   │ ╰─────^
+
+warning: Explicit data leak via return of local 3
+   ┌─ tests/confidentiality_analysis/pack.move:25:5
+   │
+25 │ ╭     fun pack_one_S_into_T2_incorrect(x: u64): T2 {
+26 │ │         let y = false;
+27 │ │         // pack of x (S) and y (P) produces S
+28 │ │         let t2 = T2 { f1: x, f2: y };
+29 │ │         return t2
+30 │ │     }
+   │ ╰─────^
+
+warning: Explicit data leak via return of local 4
+   ┌─ tests/confidentiality_analysis/pack.move:32:5
+   │
+32 │ ╭     fun pack_two_S_into_T2_incorrect(x: u64, y: bool): T2 {
+33 │ │         // pack of x (S) and y (S) produces S
+34 │ │         let t2 = T2 { f1: x, f2: y };
+35 │ │         return t2
+36 │ │     }
+   │ ╰─────^

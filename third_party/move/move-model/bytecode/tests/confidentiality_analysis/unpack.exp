@@ -1,0 +1,74 @@
+============ initial translation from Move ================
+
+[variant baseline]
+fun Unpack::unpack_struct_P(): (u64, bool) {
+     var $t0: u64
+     var $t1: bool
+     var $t2: Unpack::T
+     var $t3: u64
+     var $t4: bool
+  0: $t0 := 0
+  1: $t1 := false
+  2: $t2 := pack Unpack::T($t0, $t1)
+  3: ($t3, $t4) := unpack Unpack::T($t2)
+  4: return ($t3, $t4)
+}
+
+
+[variant baseline]
+fun Unpack::unpack_struct_S_incorrect($t0|s: Unpack::T): (u64, bool) {
+     var $t1: Unpack::T
+     var $t2: u64
+     var $t3: bool
+  0: $t1 := move($t0)
+  1: ($t2, $t3) := unpack Unpack::T($t1)
+  2: return ($t2, $t3)
+}
+
+============ after pipeline `confidentiality_analysis` ================
+
+[variant baseline]
+fun Unpack::unpack_struct_P(): (u64, bool) {
+     var $t0: u64
+     var $t1: bool
+     var $t2: Unpack::T
+     var $t3: u64
+     var $t4: bool
+  0: $t0 := 0
+  1: $t1 := false
+  2: $t2 := pack Unpack::T($t0, $t1)
+  3: ($t3, $t4) := unpack Unpack::T($t2)
+  4: return ($t3, $t4)
+}
+
+
+[variant baseline]
+fun Unpack::unpack_struct_S_incorrect($t0|s: Unpack::T): (u64, bool) {
+     var $t1: Unpack::T
+     var $t2: u64
+     var $t3: bool
+  0: $t1 := move($t0)
+  1: ($t2, $t3) := unpack Unpack::T($t1)
+  2: return ($t2, $t3)
+}
+
+============ Diagnostics ================
+warning: Explicit data leak via return of local 2
+   ┌─ tests/confidentiality_analysis/unpack.move:8:5
+   │
+ 8 │ ╭     fun unpack_struct_S_incorrect(s: T): (u64, bool) {
+ 9 │ │         // unpack of s produces S
+10 │ │         let T { f1: x, f2: y } = s;
+11 │ │         return (x, y)
+12 │ │     }
+   │ ╰─────^
+
+warning: Explicit data leak via return of local 3
+   ┌─ tests/confidentiality_analysis/unpack.move:8:5
+   │
+ 8 │ ╭     fun unpack_struct_S_incorrect(s: T): (u64, bool) {
+ 9 │ │         // unpack of s produces S
+10 │ │         let T { f1: x, f2: y } = s;
+11 │ │         return (x, y)
+12 │ │     }
+   │ ╰─────^

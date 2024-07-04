@@ -1,0 +1,147 @@
+============ initial translation from Move ================
+
+[variant baseline]
+fun BorrowField::borrow_field_from_P_no_specs(): u64 {
+     var $t0|t2: BorrowField::T2
+     var $t1: u64
+     var $t2: BorrowField::T2
+     var $t3: &BorrowField::T2
+     var $t4: &u64
+     var $t5: u64
+  0: $t1 := 0
+  1: $t2 := pack BorrowField::T2($t1)
+  2: $t0 := $t2
+  3: $t3 := borrow_local($t0)
+  4: $t4 := borrow_field<BorrowField::T2>.x($t3)
+  5: $t5 := read_ref($t4)
+  6: return $t5
+}
+
+
+[variant baseline]
+fun BorrowField::borrow_field_from_P_with_specs_incorrect(): u64 {
+     var $t0|t1: BorrowField::T1
+     var $t1: u64
+     var $t2: BorrowField::T1
+     var $t3: &BorrowField::T1
+     var $t4: &u64
+     var $t5: u64
+  0: $t1 := 0
+  1: $t2 := pack BorrowField::T1($t1)
+  2: $t0 := $t2
+  3: $t3 := borrow_local($t0)
+  4: $t4 := borrow_field<BorrowField::T1>.y($t3)
+  5: $t5 := read_ref($t4)
+  6: return $t5
+}
+
+
+[variant baseline]
+fun BorrowField::borrow_field_from_S_no_specs_incorrect($t0|t2: BorrowField::T2): u64 {
+     var $t1: &BorrowField::T2
+     var $t2: &u64
+     var $t3: u64
+  0: $t1 := borrow_local($t0)
+  1: $t2 := borrow_field<BorrowField::T2>.x($t1)
+  2: $t3 := read_ref($t2)
+  3: return $t3
+}
+
+
+[variant baseline]
+fun BorrowField::borrow_field_from_S_with_specs_incorrect($t0|t1: BorrowField::T1): u64 {
+     var $t1: &BorrowField::T1
+     var $t2: &u64
+     var $t3: u64
+  0: $t1 := borrow_local($t0)
+  1: $t2 := borrow_field<BorrowField::T1>.y($t1)
+  2: $t3 := read_ref($t2)
+  3: return $t3
+}
+
+============ after pipeline `confidentiality_analysis` ================
+
+[variant baseline]
+fun BorrowField::borrow_field_from_P_no_specs(): u64 {
+     var $t0|t2: BorrowField::T2
+     var $t1: u64
+     var $t2: BorrowField::T2
+     var $t3: &BorrowField::T2
+     var $t4: &u64
+     var $t5: u64
+  0: $t1 := 0
+  1: $t2 := pack BorrowField::T2($t1)
+  2: $t0 := $t2
+  3: $t3 := borrow_local($t0)
+  4: $t4 := borrow_field<BorrowField::T2>.x($t3)
+  5: $t5 := read_ref($t4)
+  6: return $t5
+}
+
+
+[variant baseline]
+fun BorrowField::borrow_field_from_P_with_specs_incorrect(): u64 {
+     var $t0|t1: BorrowField::T1
+     var $t1: u64
+     var $t2: BorrowField::T1
+     var $t3: &BorrowField::T1
+     var $t4: &u64
+     var $t5: u64
+  0: $t1 := 0
+  1: $t2 := pack BorrowField::T1($t1)
+  2: $t0 := $t2
+  3: $t3 := borrow_local($t0)
+  4: $t4 := borrow_field<BorrowField::T1>.y($t3)
+  5: $t5 := read_ref($t4)
+  6: return $t5
+}
+
+
+[variant baseline]
+fun BorrowField::borrow_field_from_S_no_specs_incorrect($t0|t2: BorrowField::T2): u64 {
+     var $t1: &BorrowField::T2
+     var $t2: &u64
+     var $t3: u64
+  0: $t1 := borrow_local($t0)
+  1: $t2 := borrow_field<BorrowField::T2>.x($t1)
+  2: $t3 := read_ref($t2)
+  3: return $t3
+}
+
+
+[variant baseline]
+fun BorrowField::borrow_field_from_S_with_specs_incorrect($t0|t1: BorrowField::T1): u64 {
+     var $t1: &BorrowField::T1
+     var $t2: &u64
+     var $t3: u64
+  0: $t1 := borrow_local($t0)
+  1: $t2 := borrow_field<BorrowField::T1>.y($t1)
+  2: $t3 := read_ref($t2)
+  3: return $t3
+}
+
+============ Diagnostics ================
+warning: Explicit data leak via return of local 3
+   ┌─ tests/confidentiality_analysis/borrow_field.move:10:5
+   │
+10 │ ╭     fun borrow_field_from_S_no_specs_incorrect(t2: T2): u64 {
+11 │ │         t2.x
+12 │ │     }
+   │ ╰─────^
+
+warning: Explicit data leak via return of local 5
+   ┌─ tests/confidentiality_analysis/borrow_field.move:19:5
+   │
+19 │ ╭     fun borrow_field_from_P_with_specs_incorrect(): u64 {
+20 │ │         let t1 = T1 { y: 0 };
+21 │ │         t1.y
+22 │ │     }
+   │ ╰─────^
+
+warning: Explicit data leak via return of local 3
+   ┌─ tests/confidentiality_analysis/borrow_field.move:24:5
+   │
+24 │ ╭     fun borrow_field_from_S_with_specs_incorrect(t1: T1): u64 {
+25 │ │         t1.y
+26 │ │     }
+   │ ╰─────^

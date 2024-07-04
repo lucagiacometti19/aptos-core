@@ -1,0 +1,213 @@
+============ initial translation from Move ================
+
+[variant baseline]
+fun MoveFrom::move_from_no_specs_while_pc_P($t0|addr: address): MoveFrom::T2 {
+     var $t1: address
+     var $t2: MoveFrom::T2
+  0: $t1 := move($t0)
+  1: $t2 := move_from<MoveFrom::T2>($t1)
+  2: return $t2
+}
+
+
+[variant baseline]
+fun MoveFrom::move_from_no_specs_while_pc_S_incorrect($t0|addr: address, $t1|x: u64): MoveFrom::T2 {
+     var $t2|p: MoveFrom::T2
+     var $t3: u64
+     var $t4: MoveFrom::T2
+     var $t5: u64
+     var $t6: u64
+     var $t7: bool
+     var $t8: address
+     var $t9: MoveFrom::T2
+     var $t10: MoveFrom::T2
+  0: $t3 := 0
+  1: $t4 := pack MoveFrom::T2($t3)
+  2: $t2 := $t4
+  3: $t5 := move($t1)
+  4: $t6 := 0
+  5: $t7 := >($t5, $t6)
+  6: if ($t7) goto 7 else goto 11
+  7: label L1
+  8: $t8 := move($t0)
+  9: $t9 := move_from<MoveFrom::T2>($t8)
+ 10: return $t9
+ 11: label L0
+ 12: $t10 := move($t2)
+ 13: return $t10
+}
+
+
+[variant baseline]
+fun MoveFrom::move_from_with_specs_while_pc_P_incorrect($t0|addr: address): MoveFrom::T1 {
+     var $t1: address
+     var $t2: MoveFrom::T1
+  0: $t1 := move($t0)
+  1: $t2 := move_from<MoveFrom::T1>($t1)
+  2: return $t2
+}
+
+
+[variant baseline]
+fun MoveFrom::move_from_with_specs_while_pc_S_incorrect($t0|addr: address, $t1|x: u64): MoveFrom::T1 {
+     var $t2|s: MoveFrom::T1
+     var $t3: u64
+     var $t4: MoveFrom::T1
+     var $t5: u64
+     var $t6: u64
+     var $t7: bool
+     var $t8: address
+     var $t9: MoveFrom::T1
+     var $t10: MoveFrom::T1
+  0: $t3 := 0
+  1: $t4 := pack MoveFrom::T1($t3)
+  2: $t2 := $t4
+  3: $t5 := move($t1)
+  4: $t6 := 0
+  5: $t7 := >($t5, $t6)
+  6: if ($t7) goto 7 else goto 11
+  7: label L1
+  8: $t8 := move($t0)
+  9: $t9 := move_from<MoveFrom::T1>($t8)
+ 10: return $t9
+ 11: label L0
+ 12: $t10 := move($t2)
+ 13: return $t10
+}
+
+============ after pipeline `confidentiality_analysis` ================
+
+[variant baseline]
+fun MoveFrom::move_from_no_specs_while_pc_P($t0|addr: address): MoveFrom::T2 {
+     var $t1: address
+     var $t2: MoveFrom::T2
+  0: $t1 := move($t0)
+  1: $t2 := move_from<MoveFrom::T2>($t1)
+  2: return $t2
+}
+
+
+[variant baseline]
+fun MoveFrom::move_from_no_specs_while_pc_S_incorrect($t0|addr: address, $t1|x: u64): MoveFrom::T2 {
+     var $t2|p: MoveFrom::T2
+     var $t3: u64
+     var $t4: MoveFrom::T2
+     var $t5: u64
+     var $t6: u64
+     var $t7: bool
+     var $t8: address
+     var $t9: MoveFrom::T2
+     var $t10: MoveFrom::T2
+  0: $t3 := 0
+  1: $t4 := pack MoveFrom::T2($t3)
+  2: $t2 := $t4
+  3: $t5 := move($t1)
+  4: $t6 := 0
+  5: $t7 := >($t5, $t6)
+  6: if ($t7) goto 7 else goto 11
+  7: label L1
+  8: $t8 := move($t0)
+  9: $t9 := move_from<MoveFrom::T2>($t8)
+ 10: return $t9
+ 11: label L0
+ 12: $t10 := move($t2)
+ 13: return $t10
+}
+
+
+[variant baseline]
+fun MoveFrom::move_from_with_specs_while_pc_P_incorrect($t0|addr: address): MoveFrom::T1 {
+     var $t1: address
+     var $t2: MoveFrom::T1
+  0: $t1 := move($t0)
+  1: $t2 := move_from<MoveFrom::T1>($t1)
+  2: return $t2
+}
+
+
+[variant baseline]
+fun MoveFrom::move_from_with_specs_while_pc_S_incorrect($t0|addr: address, $t1|x: u64): MoveFrom::T1 {
+     var $t2|s: MoveFrom::T1
+     var $t3: u64
+     var $t4: MoveFrom::T1
+     var $t5: u64
+     var $t6: u64
+     var $t7: bool
+     var $t8: address
+     var $t9: MoveFrom::T1
+     var $t10: MoveFrom::T1
+  0: $t3 := 0
+  1: $t4 := pack MoveFrom::T1($t3)
+  2: $t2 := $t4
+  3: $t5 := move($t1)
+  4: $t6 := 0
+  5: $t7 := >($t5, $t6)
+  6: if ($t7) goto 7 else goto 11
+  7: label L1
+  8: $t8 := move($t0)
+  9: $t9 := move_from<MoveFrom::T1>($t8)
+ 10: return $t9
+ 11: label L0
+ 12: $t10 := move($t2)
+ 13: return $t10
+}
+
+============ Diagnostics ================
+warning: Implicit data leak via return - off: 10
+   ┌─ tests/confidentiality_analysis/move_from.move:11:5
+   │
+11 │ ╭     fun move_from_no_specs_while_pc_S_incorrect(addr: address, x: u64): T2 acquires T2 {
+12 │ │         // p is P
+13 │ │         let p = T2 { x: 0 };
+14 │ │         if (x > 0) {
+   · │
+20 │ │         p
+21 │ │     }
+   │ ╰─────^
+
+warning: Implicit data leak via return - off: 13
+   ┌─ tests/confidentiality_analysis/move_from.move:11:5
+   │
+11 │ ╭     fun move_from_no_specs_while_pc_S_incorrect(addr: address, x: u64): T2 acquires T2 {
+12 │ │         // p is P
+13 │ │         let p = T2 { x: 0 };
+14 │ │         if (x > 0) {
+   · │
+20 │ │         p
+21 │ │     }
+   │ ╰─────^
+
+warning: Explicit data leak via return of local 2
+   ┌─ tests/confidentiality_analysis/move_from.move:31:5
+   │
+31 │ ╭     fun move_from_with_specs_while_pc_P_incorrect(addr: address): T1 acquires T1 {
+32 │ │         // s is S because of specs
+33 │ │         // address_of will be flagged as implicit data leak via call
+34 │ │         let s = move_from<T1>(addr);
+35 │ │         return s
+36 │ │     }
+   │ ╰─────^
+
+warning: Implicit data leak via return - off: 10
+   ┌─ tests/confidentiality_analysis/move_from.move:38:5
+   │
+38 │ ╭     fun move_from_with_specs_while_pc_S_incorrect(addr: address, x: u64): T1 acquires T1 {
+39 │ │         // s is P
+40 │ │         let s = T1 { y: 0 };
+41 │ │         if (x > 0) {
+   · │
+48 │ │         s
+49 │ │     }
+   │ ╰─────^
+
+warning: Implicit data leak via return - off: 13
+   ┌─ tests/confidentiality_analysis/move_from.move:38:5
+   │
+38 │ ╭     fun move_from_with_specs_while_pc_S_incorrect(addr: address, x: u64): T1 acquires T1 {
+39 │ │         // s is P
+40 │ │         let s = T1 { y: 0 };
+41 │ │         if (x > 0) {
+   · │
+48 │ │         s
+49 │ │     }
+   │ ╰─────^

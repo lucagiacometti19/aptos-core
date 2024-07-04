@@ -1,0 +1,168 @@
+============ initial translation from Move ================
+
+[variant baseline]
+fun Assign::assign_P_while_pc_P(): u64 {
+     var $t0: u64
+  0: $t0 := 0
+  1: return $t0
+}
+
+
+[variant baseline]
+fun Assign::assign_P_while_pc_S_incorrect($t0|s: u64): u64 {
+     var $t1|y: u64
+     var $t2: u64
+     var $t3: u64
+     var $t4: u64
+     var $t5: bool
+     var $t6: u64
+     var $t7: u64
+  0: $t2 := 0
+  1: $t1 := $t2
+  2: $t3 := move($t0)
+  3: $t4 := 0
+  4: $t5 := >($t3, $t4)
+  5: if ($t5) goto 6 else goto 10
+  6: label L1
+  7: $t6 := 1
+  8: $t1 := $t6
+  9: goto 10
+ 10: label L0
+ 11: $t7 := move($t1)
+ 12: return $t7
+}
+
+
+[variant baseline]
+fun Assign::assign_S_while_pc_P_incorrect($t0|x: u64): u64 {
+     var $t1: u64
+  0: $t1 := move($t0)
+  1: return $t1
+}
+
+
+[variant baseline]
+fun Assign::assign_S_while_pc_S_incorrect($t0|x: u64, $t1|s: u64): u64 {
+     var $t2|y: u64
+     var $t3: u64
+     var $t4: u64
+     var $t5: u64
+     var $t6: bool
+     var $t7: u64
+     var $t8: u64
+  0: $t3 := 0
+  1: $t2 := $t3
+  2: $t4 := move($t1)
+  3: $t5 := 0
+  4: $t6 := >($t4, $t5)
+  5: if ($t6) goto 6 else goto 10
+  6: label L1
+  7: $t7 := move($t0)
+  8: $t2 := $t7
+  9: goto 10
+ 10: label L0
+ 11: $t8 := move($t2)
+ 12: return $t8
+}
+
+============ after pipeline `confidentiality_analysis` ================
+
+[variant baseline]
+fun Assign::assign_P_while_pc_P(): u64 {
+     var $t0: u64
+  0: $t0 := 0
+  1: return $t0
+}
+
+
+[variant baseline]
+fun Assign::assign_P_while_pc_S_incorrect($t0|s: u64): u64 {
+     var $t1|y: u64
+     var $t2: u64
+     var $t3: u64
+     var $t4: u64
+     var $t5: bool
+     var $t6: u64
+     var $t7: u64
+  0: $t2 := 0
+  1: $t1 := $t2
+  2: $t3 := move($t0)
+  3: $t4 := 0
+  4: $t5 := >($t3, $t4)
+  5: if ($t5) goto 6 else goto 10
+  6: label L1
+  7: $t6 := 1
+  8: $t1 := $t6
+  9: goto 10
+ 10: label L0
+ 11: $t7 := move($t1)
+ 12: return $t7
+}
+
+
+[variant baseline]
+fun Assign::assign_S_while_pc_P_incorrect($t0|x: u64): u64 {
+     var $t1: u64
+  0: $t1 := move($t0)
+  1: return $t1
+}
+
+
+[variant baseline]
+fun Assign::assign_S_while_pc_S_incorrect($t0|x: u64, $t1|s: u64): u64 {
+     var $t2|y: u64
+     var $t3: u64
+     var $t4: u64
+     var $t5: u64
+     var $t6: bool
+     var $t7: u64
+     var $t8: u64
+  0: $t3 := 0
+  1: $t2 := $t3
+  2: $t4 := move($t1)
+  3: $t5 := 0
+  4: $t6 := >($t4, $t5)
+  5: if ($t6) goto 6 else goto 10
+  6: label L1
+  7: $t7 := move($t0)
+  8: $t2 := $t7
+  9: goto 10
+ 10: label L0
+ 11: $t8 := move($t2)
+ 12: return $t8
+}
+
+============ Diagnostics ================
+warning: Explicit data leak via return of local 7
+   ┌─ tests/confidentiality_analysis/assign.move:11:5
+   │
+11 │ ╭     fun assign_P_while_pc_S_incorrect(s: u64): u64 {
+12 │ │         // load const, x is P
+13 │ │         let x = 1;
+14 │ │         // load const, y is P
+   · │
+20 │ │         y
+21 │ │     }
+   │ ╰─────^
+
+warning: Explicit data leak via return of local 8
+   ┌─ tests/confidentiality_analysis/assign.move:23:5
+   │
+23 │ ╭     fun assign_S_while_pc_S_incorrect(x: u64, s: u64): u64 {
+24 │ │         // load const, y is P
+25 │ │         let y = 0;
+26 │ │         if (s > 0) {
+   · │
+30 │ │         y
+31 │ │     }
+   │ ╰─────^
+
+warning: Explicit data leak via return of local 1
+   ┌─ tests/confidentiality_analysis/assign.move:33:5
+   │
+33 │ ╭     fun assign_S_while_pc_P_incorrect(x: u64): u64 {
+34 │ │         // pc is P, x is S -> y is S
+35 │ │         let y = x;
+36 │ │         y
+37 │ │     }
+   │ ╰─────^

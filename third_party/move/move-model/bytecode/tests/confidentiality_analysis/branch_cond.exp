@@ -1,0 +1,182 @@
+============ initial translation from Move ================
+
+[variant baseline]
+fun BranchCond::branch_guard_P($t0|_: u64): u64 {
+     var $t1: u64
+  0: $t1 := 1
+  1: return $t1
+}
+
+
+[variant baseline]
+fun BranchCond::branch_guard_S_incorrect($t0|x: u64): u64 {
+     var $t1: u64
+     var $t2: u64
+     var $t3: bool
+     var $t4: u64
+     var $t5: u64
+  0: $t1 := move($t0)
+  1: $t2 := 0
+  2: $t3 := >($t1, $t2)
+  3: if ($t3) goto 4 else goto 7
+  4: label L1
+  5: $t4 := 1
+  6: return $t4
+  7: label L0
+  8: $t5 := 0
+  9: return $t5
+}
+
+
+[variant baseline]
+fun BranchCond::branch_guard_S_while_pc_S_incorrect($t0|x: u64, $t1|y: u64): u64 {
+     var $t2: u64
+     var $t3: u64
+     var $t4: bool
+     var $t5: u64
+     var $t6: u64
+     var $t7: bool
+     var $t8: u64
+     var $t9: u64
+     var $t10: u64
+  0: $t2 := move($t0)
+  1: $t3 := 0
+  2: $t4 := >($t2, $t3)
+  3: if ($t4) goto 4 else goto 15
+  4: label L1
+  5: $t5 := move($t1)
+  6: $t6 := 0
+  7: $t7 := >($t5, $t6)
+  8: if ($t7) goto 9 else goto 12
+  9: label L3
+ 10: $t8 := 1
+ 11: return $t8
+ 12: label L2
+ 13: $t9 := 0
+ 14: return $t9
+ 15: label L0
+ 16: $t10 := 0
+ 17: return $t10
+}
+
+============ after pipeline `confidentiality_analysis` ================
+
+[variant baseline]
+fun BranchCond::branch_guard_P($t0|_: u64): u64 {
+     var $t1: u64
+  0: $t1 := 1
+  1: return $t1
+}
+
+
+[variant baseline]
+fun BranchCond::branch_guard_S_incorrect($t0|x: u64): u64 {
+     var $t1: u64
+     var $t2: u64
+     var $t3: bool
+     var $t4: u64
+     var $t5: u64
+  0: $t1 := move($t0)
+  1: $t2 := 0
+  2: $t3 := >($t1, $t2)
+  3: if ($t3) goto 4 else goto 7
+  4: label L1
+  5: $t4 := 1
+  6: return $t4
+  7: label L0
+  8: $t5 := 0
+  9: return $t5
+}
+
+
+[variant baseline]
+fun BranchCond::branch_guard_S_while_pc_S_incorrect($t0|x: u64, $t1|y: u64): u64 {
+     var $t2: u64
+     var $t3: u64
+     var $t4: bool
+     var $t5: u64
+     var $t6: u64
+     var $t7: bool
+     var $t8: u64
+     var $t9: u64
+     var $t10: u64
+  0: $t2 := move($t0)
+  1: $t3 := 0
+  2: $t4 := >($t2, $t3)
+  3: if ($t4) goto 4 else goto 15
+  4: label L1
+  5: $t5 := move($t1)
+  6: $t6 := 0
+  7: $t7 := >($t5, $t6)
+  8: if ($t7) goto 9 else goto 12
+  9: label L3
+ 10: $t8 := 1
+ 11: return $t8
+ 12: label L2
+ 13: $t9 := 0
+ 14: return $t9
+ 15: label L0
+ 16: $t10 := 0
+ 17: return $t10
+}
+
+============ Diagnostics ================
+warning: Implicit data leak via return - off: 6
+  ┌─ tests/confidentiality_analysis/branch_cond.move:3:5
+  │
+3 │ ╭     fun branch_guard_S_incorrect(x: u64): u64 {
+4 │ │         if (x > 0) {
+5 │ │             // pc raised
+6 │ │             return 1
+7 │ │         };
+8 │ │         0
+9 │ │     }
+  │ ╰─────^
+
+warning: Implicit data leak via return - off: 9
+  ┌─ tests/confidentiality_analysis/branch_cond.move:3:5
+  │
+3 │ ╭     fun branch_guard_S_incorrect(x: u64): u64 {
+4 │ │         if (x > 0) {
+5 │ │             // pc raised
+6 │ │             return 1
+7 │ │         };
+8 │ │         0
+9 │ │     }
+  │ ╰─────^
+
+warning: Implicit data leak via return - off: 11
+   ┌─ tests/confidentiality_analysis/branch_cond.move:20:5
+   │
+20 │ ╭     fun branch_guard_S_while_pc_S_incorrect(x: u64, y: u64): u64 {
+21 │ │         if (x > 0) {
+22 │ │             // pc raised
+23 │ │             if (y > 0) {
+   · │
+29 │ │         0
+30 │ │     }
+   │ ╰─────^
+
+warning: Implicit data leak via return - off: 14
+   ┌─ tests/confidentiality_analysis/branch_cond.move:20:5
+   │
+20 │ ╭     fun branch_guard_S_while_pc_S_incorrect(x: u64, y: u64): u64 {
+21 │ │         if (x > 0) {
+22 │ │             // pc raised
+23 │ │             if (y > 0) {
+   · │
+29 │ │         0
+30 │ │     }
+   │ ╰─────^
+
+warning: Implicit data leak via return - off: 17
+   ┌─ tests/confidentiality_analysis/branch_cond.move:20:5
+   │
+20 │ ╭     fun branch_guard_S_while_pc_S_incorrect(x: u64, y: u64): u64 {
+21 │ │         if (x > 0) {
+22 │ │             // pc raised
+23 │ │             if (y > 0) {
+   · │
+29 │ │         0
+30 │ │     }
+   │ ╰─────^

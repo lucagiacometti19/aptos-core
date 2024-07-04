@@ -15,6 +15,7 @@ pub mod dataflow_analysis;
 pub mod dataflow_domains;
 pub mod debug_instrumentation;
 pub mod function_data_builder;
+pub mod confidentiality_analysis;
 pub mod function_target;
 pub mod function_target_pipeline;
 pub mod graph;

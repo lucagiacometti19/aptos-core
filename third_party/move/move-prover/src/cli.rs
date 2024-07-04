@@ -57,6 +57,8 @@ pub struct Options {
     pub run_abigen: bool,
     /// Whether to run the error map generator instead of the prover.
     pub run_errmapgen: bool,
+    /// Whether to run the internal reference confidentiality analysis instead of the prover
+    pub run_confidentiality: bool,
     /// Whether to run the read write set analysis instead of the prover
     pub run_read_write_set: bool,
     /// The paths to the Move sources.
@@ -98,6 +100,7 @@ impl Default for Options {
             run_docgen: false,
             run_abigen: false,
             run_errmapgen: false,
+            run_confidentiality: false,
             run_read_write_set: false,
             verbosity_level: LevelFilter::Info,
             move_sources: vec![],
@@ -326,6 +329,12 @@ impl Options {
                     .action(SetTrue)
                     .help("runs the error map generator instead of the prover. \
                     The generated error map will be written to `errmap` unless configured otherwise"),
+            )
+            .arg(
+                Arg::new("confidentiality")
+                    .long("confidentiality")
+                    .action(SetTrue)
+                    .help("runs the confidentiality analysis instead of the prover.")
             )
             .arg(
                 Arg::new("packedtypesgen")
@@ -707,6 +716,9 @@ impl Options {
         }
         if matches.get_flag("errmapgen") {
             options.run_errmapgen = true;
+        }
+        if matches.get_flag("confidentiality") {
+            options.run_confidentiality = true;
         }
         if matches.get_flag("read-write-set") {
             options.run_read_write_set = true;

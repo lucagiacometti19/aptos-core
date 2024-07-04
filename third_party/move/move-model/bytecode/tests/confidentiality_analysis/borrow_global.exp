@@ -1,0 +1,129 @@
+============ initial translation from Move ================
+
+[variant baseline]
+fun BorrowGlobal::borrow_global_no_specs_with_P_address(): BorrowGlobal::T2 {
+     var $t0: address
+     var $t1: &BorrowGlobal::T2
+     var $t2: BorrowGlobal::T2
+  0: $t0 := 0x19
+  1: $t1 := borrow_global<BorrowGlobal::T2>($t0)
+  2: $t2 := read_ref($t1)
+  3: return $t2
+}
+
+
+[variant baseline]
+fun BorrowGlobal::borrow_global_no_specs_with_S_address_incorrect($t0|addr: address): BorrowGlobal::T2 {
+     var $t1: address
+     var $t2: &BorrowGlobal::T2
+     var $t3: BorrowGlobal::T2
+  0: $t1 := move($t0)
+  1: $t2 := borrow_global<BorrowGlobal::T2>($t1)
+  2: $t3 := read_ref($t2)
+  3: return $t3
+}
+
+
+[variant baseline]
+fun BorrowGlobal::borrow_global_with_specs_with_P_address_incorrect(): BorrowGlobal::T1 {
+     var $t0: address
+     var $t1: &BorrowGlobal::T1
+     var $t2: BorrowGlobal::T1
+  0: $t0 := 0x19
+  1: $t1 := borrow_global<BorrowGlobal::T1>($t0)
+  2: $t2 := read_ref($t1)
+  3: return $t2
+}
+
+
+[variant baseline]
+fun BorrowGlobal::borrow_global_with_specs_with_S_address_incorrect($t0|addr: address): BorrowGlobal::T1 {
+     var $t1: address
+     var $t2: &BorrowGlobal::T1
+     var $t3: BorrowGlobal::T1
+  0: $t1 := move($t0)
+  1: $t2 := borrow_global<BorrowGlobal::T1>($t1)
+  2: $t3 := read_ref($t2)
+  3: return $t3
+}
+
+============ after pipeline `confidentiality_analysis` ================
+
+[variant baseline]
+fun BorrowGlobal::borrow_global_no_specs_with_P_address(): BorrowGlobal::T2 {
+     var $t0: address
+     var $t1: &BorrowGlobal::T2
+     var $t2: BorrowGlobal::T2
+  0: $t0 := 0x19
+  1: $t1 := borrow_global<BorrowGlobal::T2>($t0)
+  2: $t2 := read_ref($t1)
+  3: return $t2
+}
+
+
+[variant baseline]
+fun BorrowGlobal::borrow_global_no_specs_with_S_address_incorrect($t0|addr: address): BorrowGlobal::T2 {
+     var $t1: address
+     var $t2: &BorrowGlobal::T2
+     var $t3: BorrowGlobal::T2
+  0: $t1 := move($t0)
+  1: $t2 := borrow_global<BorrowGlobal::T2>($t1)
+  2: $t3 := read_ref($t2)
+  3: return $t3
+}
+
+
+[variant baseline]
+fun BorrowGlobal::borrow_global_with_specs_with_P_address_incorrect(): BorrowGlobal::T1 {
+     var $t0: address
+     var $t1: &BorrowGlobal::T1
+     var $t2: BorrowGlobal::T1
+  0: $t0 := 0x19
+  1: $t1 := borrow_global<BorrowGlobal::T1>($t0)
+  2: $t2 := read_ref($t1)
+  3: return $t2
+}
+
+
+[variant baseline]
+fun BorrowGlobal::borrow_global_with_specs_with_S_address_incorrect($t0|addr: address): BorrowGlobal::T1 {
+     var $t1: address
+     var $t2: &BorrowGlobal::T1
+     var $t3: BorrowGlobal::T1
+  0: $t1 := move($t0)
+  1: $t2 := borrow_global<BorrowGlobal::T1>($t1)
+  2: $t3 := read_ref($t2)
+  3: return $t3
+}
+
+============ Diagnostics ================
+warning: Explicit data leak via return of local 3
+   ┌─ tests/confidentiality_analysis/borrow_global.move:21:5
+   │
+21 │ ╭     fun borrow_global_no_specs_with_S_address_incorrect(addr: address): T2 acquires T2 {
+22 │ │         // t2 is S
+23 │ │         let t2 = borrow_global<T2>(addr);
+24 │ │         return *t2
+25 │ │     }
+   │ ╰─────^
+
+warning: Explicit data leak via return of local 3
+   ┌─ tests/confidentiality_analysis/borrow_global.move:27:5
+   │
+27 │ ╭     fun borrow_global_with_specs_with_S_address_incorrect(addr: address): T1 acquires T1 {
+28 │ │         // T1 has specs -> t1 is S
+29 │ │         let t1 = borrow_global<T1>(addr);
+30 │ │         return *t1
+31 │ │     }
+   │ ╰─────^
+
+warning: Explicit data leak via return of local 2
+   ┌─ tests/confidentiality_analysis/borrow_global.move:33:5
+   │
+33 │ ╭     fun borrow_global_with_specs_with_P_address_incorrect(): T1 acquires T1 {
+34 │ │         let addr: address = @0x19;
+35 │ │         // T1 has specs -> t1 is S
+36 │ │         let t1 = borrow_global<T1>(addr);
+37 │ │         return *t1
+38 │ │     }
+   │ ╰─────^

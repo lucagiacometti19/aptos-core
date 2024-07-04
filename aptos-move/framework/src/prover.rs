@@ -37,6 +37,10 @@ pub struct ProverOptions {
     #[clap(long)]
     pub cvc5: bool,
 
+    /// Whether to run the internal reference confidentiality analysis instead of the prover
+    #[clap(long)]
+    pub run_confidentiality: bool,
+
     /// The depth until which stratified functions are expanded.
     #[clap(long, default_value_t = 6)]
     pub stratification_depth: usize,
@@ -95,6 +99,7 @@ impl Default for ProverOptions {
             filter: None,
             trace: false,
             cvc5: false,
+            run_confidentiality: false,
             stratification_depth: 6,
             random_seed: 0,
             proc_cores: 4,
@@ -185,6 +190,7 @@ impl ProverOptions {
         let opts = move_prover::cli::Options {
             output_path: "".to_string(),
             verbosity_level,
+            run_confidentiality: self.run_confidentiality,
             prover: move_prover_bytecode_pipeline::options::ProverOptions {
                 stable_test_output: self.stable_test_output,
                 auto_trace_level: if self.trace {

@@ -1,0 +1,67 @@
+============ initial translation from Move ================
+
+[variant baseline]
+fun BorrowLocal::borrow_local_P() {
+     var $t0|x: u64
+     var $t1: u64
+     var $t2: &u64
+  0: $t1 := 0
+  1: $t0 := $t1
+  2: $t2 := borrow_local($t0)
+  3: BorrowLocal::dummy($t2)
+  4: return ()
+}
+
+
+[variant baseline]
+fun BorrowLocal::borrow_local_S_incorrect($t0|x: u64) {
+     var $t1: &u64
+  0: $t1 := borrow_local($t0)
+  1: BorrowLocal::dummy($t1)
+  2: return ()
+}
+
+
+[variant baseline]
+fun BorrowLocal::dummy($t0|_: &u64) {
+  0: return ()
+}
+
+============ after pipeline `confidentiality_analysis` ================
+
+[variant baseline]
+fun BorrowLocal::borrow_local_P() {
+     var $t0|x: u64
+     var $t1: u64
+     var $t2: &u64
+  0: $t1 := 0
+  1: $t0 := $t1
+  2: $t2 := borrow_local($t0)
+  3: BorrowLocal::dummy($t2)
+  4: return ()
+}
+
+
+[variant baseline]
+fun BorrowLocal::borrow_local_S_incorrect($t0|x: u64) {
+     var $t1: &u64
+  0: $t1 := borrow_local($t0)
+  1: BorrowLocal::dummy($t1)
+  2: return ()
+}
+
+
+[variant baseline]
+fun BorrowLocal::dummy($t0|_: &u64) {
+  0: return ()
+}
+
+============ Diagnostics ================
+warning: Explicit data leak via call with local 1
+   ┌─ tests/confidentiality_analysis/borrow_local.move:11:5
+   │
+11 │ ╭     fun borrow_local_S_incorrect(x: u64) {
+12 │ │         let ref_x = &x;
+13 │ │         dummy(ref_x)
+14 │ │     }
+   │ ╰─────^

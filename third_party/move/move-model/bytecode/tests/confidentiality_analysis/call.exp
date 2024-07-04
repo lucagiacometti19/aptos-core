@@ -1,0 +1,176 @@
+============ initial translation from Move ================
+
+[variant baseline]
+fun Call::UDFn_call_P_args_while_pc_P() {
+     var $t0: u64
+     var $t1: u64
+  0: $t0 := 0
+  1: $t1 := Call::dummy($t0)
+  2: drop($t1)
+  3: return ()
+}
+
+
+[variant baseline]
+fun Call::UDFn_call_P_args_while_pc_S_incorrect($t0|x: u64) {
+     var $t1: u64
+     var $t2: u64
+     var $t3: bool
+     var $t4: u64
+     var $t5: u64
+  0: $t1 := move($t0)
+  1: $t2 := 0
+  2: $t3 := >($t1, $t2)
+  3: if ($t3) goto 4 else goto 9
+  4: label L1
+  5: $t4 := 0
+  6: $t5 := Call::dummy($t4)
+  7: drop($t5)
+  8: goto 9
+  9: label L0
+ 10: return ()
+}
+
+
+[variant baseline]
+fun Call::UDFn_call_S_args_while_pc_P_incorrect($t0|x: u64) {
+     var $t1: u64
+     var $t2: u64
+  0: $t1 := move($t0)
+  1: $t2 := Call::dummy($t1)
+  2: drop($t2)
+  3: return ()
+}
+
+
+[variant baseline]
+fun Call::UDFn_call_S_args_while_pc_S_incorrect($t0|x: u64) {
+     var $t1: u64
+     var $t2: u64
+     var $t3: bool
+     var $t4: u64
+     var $t5: u64
+  0: $t1 := copy($t0)
+  1: $t2 := 0
+  2: $t3 := >($t1, $t2)
+  3: if ($t3) goto 4 else goto 9
+  4: label L1
+  5: $t4 := move($t0)
+  6: $t5 := Call::dummy($t4)
+  7: drop($t5)
+  8: goto 9
+  9: label L0
+ 10: return ()
+}
+
+
+[variant baseline]
+fun Call::dummy($t0|_: u64): u64 {
+     var $t1: u64
+  0: $t1 := 0
+  1: return $t1
+}
+
+============ after pipeline `confidentiality_analysis` ================
+
+[variant baseline]
+fun Call::UDFn_call_P_args_while_pc_P() {
+     var $t0: u64
+     var $t1: u64
+  0: $t0 := 0
+  1: $t1 := Call::dummy($t0)
+  2: drop($t1)
+  3: return ()
+}
+
+
+[variant baseline]
+fun Call::UDFn_call_P_args_while_pc_S_incorrect($t0|x: u64) {
+     var $t1: u64
+     var $t2: u64
+     var $t3: bool
+     var $t4: u64
+     var $t5: u64
+  0: $t1 := move($t0)
+  1: $t2 := 0
+  2: $t3 := >($t1, $t2)
+  3: if ($t3) goto 4 else goto 9
+  4: label L1
+  5: $t4 := 0
+  6: $t5 := Call::dummy($t4)
+  7: drop($t5)
+  8: goto 9
+  9: label L0
+ 10: return ()
+}
+
+
+[variant baseline]
+fun Call::UDFn_call_S_args_while_pc_P_incorrect($t0|x: u64) {
+     var $t1: u64
+     var $t2: u64
+  0: $t1 := move($t0)
+  1: $t2 := Call::dummy($t1)
+  2: drop($t2)
+  3: return ()
+}
+
+
+[variant baseline]
+fun Call::UDFn_call_S_args_while_pc_S_incorrect($t0|x: u64) {
+     var $t1: u64
+     var $t2: u64
+     var $t3: bool
+     var $t4: u64
+     var $t5: u64
+  0: $t1 := copy($t0)
+  1: $t2 := 0
+  2: $t3 := >($t1, $t2)
+  3: if ($t3) goto 4 else goto 9
+  4: label L1
+  5: $t4 := move($t0)
+  6: $t5 := Call::dummy($t4)
+  7: drop($t5)
+  8: goto 9
+  9: label L0
+ 10: return ()
+}
+
+
+[variant baseline]
+fun Call::dummy($t0|_: u64): u64 {
+     var $t1: u64
+  0: $t1 := 0
+  1: return $t1
+}
+
+============ Diagnostics ================
+warning: Implicit data leak via call
+   ┌─ tests/confidentiality_analysis/call.move:12:5
+   │
+12 │ ╭     fun UDFn_call_P_args_while_pc_S_incorrect(x: u64) {
+13 │ │         if (x > 0) {
+14 │ │             // pc raised
+15 │ │             dummy(0);
+16 │ │         };
+17 │ │     }
+   │ ╰─────^
+
+warning: Implicit data leak via call
+   ┌─ tests/confidentiality_analysis/call.move:21:5
+   │
+21 │ ╭     fun UDFn_call_S_args_while_pc_S_incorrect(x: u64) {
+22 │ │         if (x > 0) {
+23 │ │             // pc raised
+24 │ │             dummy(x);
+25 │ │         };
+26 │ │     }
+   │ ╰─────^
+
+warning: Explicit data leak via call with local 1
+   ┌─ tests/confidentiality_analysis/call.move:36:5
+   │
+36 │ ╭     fun UDFn_call_S_args_while_pc_P_incorrect(x: u64) {
+37 │ │         dummy(x);
+38 │ │     }
+   │ ╰─────^

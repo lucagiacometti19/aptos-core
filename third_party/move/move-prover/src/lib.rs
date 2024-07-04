@@ -6,7 +6,7 @@
 
 use crate::cli::Options;
 use anyhow::anyhow;
-use codespan_reporting::term::termcolor::{ColorChoice, StandardStream, WriteColor};
+use codespan_reporting::term::termcolor::{Buffer, ColorChoice, StandardStream, WriteColor};
 #[allow(unused_imports)]
 use log::{debug, info, warn};
 use move_abigen::Abigen;
@@ -24,7 +24,10 @@ use move_prover_boogie_backend::{
 use move_prover_bytecode_pipeline::{
     number_operation::GlobalNumberOperationState, pipeline_factory,
 };
-use move_stackless_bytecode::function_target_pipeline::FunctionTargetsHolder;
+use move_stackless_bytecode::{
+    confidentiality_analysis::ConfidentialityAnalysisProcessor,
+    function_target_pipeline::{FunctionTargetPipeline, FunctionTargetsHolder},
+};
 use std::{
     fs,
     path::{Path, PathBuf},
@@ -166,6 +169,13 @@ pub fn run_move_prover_with_model_v2<W: WriteColor>(
     if options.run_errmapgen {
         return {
             run_errmapgen(env, &options, start_time);
+            Ok(())
+        };
+    }
+    // Same for confidentiality analysis
+    if options.run_confidentiality {
+        return {
+            run_confidentiality(env, &options, start_time);
             Ok(())
         };
     }
@@ -388,4 +398,43 @@ fn run_errmapgen(env: &GlobalEnv, options: &Options, now: Instant) {
         checking_elapsed.as_secs_f64(),
         (generating_elapsed - checking_elapsed).as_secs_f64()
     );
+}
+
+fn run_confidentiality(env: &GlobalEnv, options: &Options, now: Instant) {
+    let mut targets = FunctionTargetsHolder::default();
+    for module_env in env.get_modules() {
+        for func_env in module_env.get_functions() {
+            targets.add_target(&func_env)
+        }
+    }
+    println!(
+        "Analyzing {} modules, {} declared functions, {} declared structs",
+        //.get_module_count()
+        env.get_target_modules().len(),
+        env.get_target_modules().iter().fold(0, |acc, module| acc + module.get_function_count()),
+        env.get_target_modules().iter().fold(0, |acc, module| acc + module.get_struct_count()),
+    );
+    let mut pipeline = FunctionTargetPipeline::default();
+    pipeline.add_processor(ConfidentialityAnalysisProcessor::new());
+
+    let start = now.elapsed();
+    pipeline.run(env, &mut targets);
+    let end = now.elapsed();
+
+    let mut error_writer = Buffer::no_color();
+    env.report_diag(&mut error_writer, options.prover.report_severity);
+    // print all escaped internal refs flagged by analysis, do not report errors in dependencies
+    /* env.report_diag_with_filter(&mut error_writer, |d| {
+        let fname = env.get_file(d.labels[0].file_id).to_str().unwrap();
+        options.move_sources.iter().any(|d| {
+            let p = Path::new(d);
+            if p.is_file() {
+                d == fname
+            } else {
+                Path::new(fname).parent().unwrap() == p
+            }
+        }) && d.severity >= Severity::Warning
+    }); */
+    println!("{}", String::from_utf8_lossy(&error_writer.into_inner()));
+    info!("in ms, analysis took {:.3}", (end - start).as_millis())
 }
